@@ -419,7 +419,10 @@ public class Fase3Screen extends FaseBaseScreen{
 
                 movimentoFinalPlayer = true;
                 
-                faseAtual.backgroundOffsetX = 0; 
+                faseAtual.backgroundOffsetX = 0;
+
+                inimigos.clear();   // Remove todos os inimigos da tela na hora
+                powerUps.clear();   // Remove todos os powerups da tela na hora
             }
         }
 
