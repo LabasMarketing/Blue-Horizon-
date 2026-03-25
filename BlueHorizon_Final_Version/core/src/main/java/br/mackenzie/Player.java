@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class Player extends GameObject{
     private final Viewport viewport;
     private boolean isMoving = false;
+    private boolean movingTouch = false;
     private Texture powerUpSprite = null;
     private final Sound somTrocaRaia = Gdx.audio.newSound(Gdx.files.internal("Sons/swim.mp3"));
 
@@ -37,11 +38,16 @@ public class Player extends GameObject{
         isMoving = false; 
 
         // NADADOR
-        // Para frente e para trás
+        // Para frente (teclado)
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             isMoving = true; 
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             isMoving = true; 
+        }
+
+        // Para frente (mobile)
+        if (movingTouch) {
+            isMoving = true;
         }
         // Para cima e para baixo
         if(Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W)){
@@ -67,6 +73,30 @@ public class Player extends GameObject{
         sprite.setX(MathUtils.clamp(sprite.getX(), 0, worldWidth - playerWidth));
         sprite.setY(MathUtils.clamp(sprite.getY(), -1, worldHeight - playerHeight));
 
+    }
+
+    public void moverParaCima() {
+        somTrocaRaia.play();
+
+        if (targetY == Raia_Baixa_y) {
+            targetY = Raia_Media_y;
+        } else if (targetY == Raia_Media_y) {
+            targetY = Raia_Alta_y;
+        }
+    }
+
+    public void moverParaBaixo() {
+        somTrocaRaia.play();
+
+        if (targetY == Raia_Alta_y) {
+            targetY = Raia_Media_y;
+        } else if (targetY == Raia_Media_y) {
+            targetY = Raia_Baixa_y;
+        }
+    }
+
+    public void setMovingTouch(boolean movingTouch) {
+        this.movingTouch = movingTouch;
     }
 
     public void setX(float newX) {
