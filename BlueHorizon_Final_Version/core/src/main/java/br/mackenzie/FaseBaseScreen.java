@@ -2,12 +2,12 @@ package br.mackenzie;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public abstract class FaseBaseScreen implements Screen{
     protected final Main game;
     protected final SpriteBatch spriteBatch;
-    protected FitViewport viewport;
+    protected ExtendViewport viewport;
     
     public Player player; 
 
