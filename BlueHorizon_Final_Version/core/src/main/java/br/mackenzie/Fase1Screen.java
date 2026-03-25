@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class Fase1Screen extends FaseBaseScreen{
 
@@ -122,11 +122,16 @@ public class Fase1Screen extends FaseBaseScreen{
     private float progressRate = 1.0f;
     // Duração total da fase em "segundos de ação" 
     private final float MAX_PROGRESS_TIME = 180f; // 300f 0.98 180 0.96
+
+    // Versão Mobile com os dedos funcionando 
+    private float toqueInicialY = 0f;
+    private boolean swipeEmAndamento = false;
+    private final float distanciaMinimaSwipe = 0.25f;
     
     @Override
     public void show() {
         // Inicializa tela
-        viewport = new FitViewport(8, 5);
+        viewport = new ExtendViewport(8, 5);
 
         // Inimigos
         boiaTexture = new Texture("Imagens_Fase1/Boia.png");
@@ -228,6 +233,13 @@ public class Fase1Screen extends FaseBaseScreen{
     public void render(float dt) {
         dt = Gdx.graphics.getDeltaTime();
         inputsDoSistema();
+
+        if (!paused && gameState == GameState.RUNNING && !gameOver) {
+            inputSwipeRaia();   // troca de raia
+            inputNadoTouch();   // nadar
+        } else {
+            player.setMovingTouch(false);
+        }
 
         ScreenUtils.clear(0, 0, 0, 1);
 
@@ -890,6 +902,45 @@ public class Fase1Screen extends FaseBaseScreen{
     @Override public void pause() { }
     @Override public void resume() { }
     @Override public void hide() { faseAtual.music.pause();}
+
+    private void inputSwipeRaia() {
+        Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        viewport.unproject(touchPoint);
+
+        float yAtual = touchPoint.y;
+
+        // começou o toque
+        if (Gdx.input.justTouched()) {
+            toqueInicialY = yAtual;
+            swipeEmAndamento = true;
+        }
+
+        // dedo ainda na tela
+        if (Gdx.input.isTouched() && swipeEmAndamento) {
+            float diferencaY = yAtual - toqueInicialY;
+
+            if (diferencaY > distanciaMinimaSwipe) {
+                player.moverParaCima();
+                swipeEmAndamento = false;
+            } else if (diferencaY < -distanciaMinimaSwipe) {
+                player.moverParaBaixo();
+                swipeEmAndamento = false;
+            }
+        }
+
+        // soltou o dedo
+        if (!Gdx.input.isTouched()) {
+            swipeEmAndamento = false;
+        }
+    }
+
+    private void inputNadoTouch() {
+        if (Gdx.input.isTouched()) {
+            player.setMovingTouch(true);
+        } else {
+            player.setMovingTouch(false);
+        }
+    }
 
     private void inputsDoSistema(){
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
